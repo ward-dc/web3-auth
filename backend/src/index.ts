@@ -4,11 +4,15 @@ import prisma from "./utils/prismaHandler";
 var cors = require('cors')
 const app = express();
 
+// app.use(express.urlencoded({ extended: true}))
+app.use(express.json())
 app.use(cors())
+
 dotenv.config();
 
-//get
-app.get( "/auth", require("./events/get/auth") );
+//POST
+app.post( "/auth", require("./events/POST/auth") );
+app.post( "/verify", require("./events/POST/verify") );
 
 
 app.listen(3333, () => {

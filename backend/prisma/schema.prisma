@@ -16,8 +16,7 @@ enum Role {
 }
 
 model User {
-  id               String    @id @default(cuid())
-  address          String
+  address          String    @id
   createdAt        DateTime  @default(now())
   balanceUpdatedAt DateTime  @default(now())
   sessions         Session[]
@@ -26,8 +25,8 @@ model User {
 }
 
 model Session {
-  id        String   @id @default(cuid())
-  userId    String
-  user      User     @relation(fields: [userId], references: [id])
+  id        String   @id
+  userAddress    String
+  user      User     @relation(fields: [userAddress], references: [address])
   createdAt DateTime @default(now())
 }
