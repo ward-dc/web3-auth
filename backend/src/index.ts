@@ -8,13 +8,7 @@ app.use(cors())
 dotenv.config();
 
 //get
-app.get( "/collections", require("./events/get/collections") );
-
-
-
-//post
-app.post("/collection", require("./events/post/collection"));
-app.post("/collection/:slug", require("./events/post/getcollection"));
+app.get( "/auth", require("./events/get/auth") );
 
 
 app.listen(3333, () => {
