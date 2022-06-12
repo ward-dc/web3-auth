@@ -1,4 +1,8 @@
-import { generateMessage, generateToken, getTokenFromMessage } from "../utils/token";
+import {
+	generateMessage,
+	generateToken,
+	getTokenFromMessage,
+} from "../utils/token";
 import { ethers } from "ethers";
 
 import prisma from "../utils/prismaHandler";
@@ -36,16 +40,17 @@ export const cleanTokens = (): void => {
 };
 
 export const verifyToken = async (message: string, signature: string) => {
-	const signerAddress = ethers.utils.verifyMessage(message,signature);
+	const signerAddress = ethers.utils.verifyMessage(message, signature);
 	const authRequest = getMessageToken(message);
 	const authToken = getTokenFromMessage(message);
-	
 
 	const validMessage = authRequest?.id === authToken;
-	const validSigner = authRequest?.address === signerAddress?.toLocaleLowerCase();
+	const validSigner =
+		authRequest?.address === signerAddress?.toLocaleLowerCase();
 	if (validMessage && validSigner) {
 		const sessionToken = generateToken();
-		return await prisma.user.upsert({
+		
+		const user = await prisma.user.upsert({
 			where: {
 				address: signerAddress,
 			},
@@ -64,7 +69,16 @@ export const verifyToken = async (message: string, signature: string) => {
 					},
 				},
 			},
+			select: {
+				address: true,
+				role: true,
+				subscription: true,
+			},
 		});
+		return {
+			user: user,
+			sessionToken: sessionToken,
+		};
 	}
 	return null;
 };

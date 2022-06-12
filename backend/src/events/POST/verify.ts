@@ -1,4 +1,5 @@
 import { Request, Response } from "express";
+import { setCookie } from "nookies";
 import { addToken, verifyToken } from "../../data/authTokens";
 import prisma from "../../utils/prismaHandler";
 module.exports = async (req: Request, res: Response) => {
@@ -15,9 +16,13 @@ module.exports = async (req: Request, res: Response) => {
 		return;
 	}
 
-	const user = await verifyToken(message, signature);
-	if (user) {
-		res.send({ success: true, user: user });
+	const accountData = await verifyToken(message, signature);
+	if (accountData) {
+		setCookie({ res }, 'token', accountData.sessionToken, {
+            maxAge: 30 * 24 * 60 * 60,
+            path: '/',
+          });
+		res.send({ success: true, result: accountData });
 		return;
 	}
 

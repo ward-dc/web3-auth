@@ -12,5 +12,5 @@ module.exports = async (req: Request, res: Response) => {
 
 	const message = addToken(address);
 
-	res.send({ success: true, message: message });
+	res.send({ success: true, result: message });
 };
