@@ -1,9 +1,9 @@
 import { destroyCookie, parseCookies, setCookie } from "nookies";
 import React, { createContext, ReactNode, useContext, useEffect, useState } from "react";
-import { AuthState, AuthUser } from "../../types/Auth";
-import { ErrHandler } from "../../types/Functions";
+import { ErrHandler } from "../../../types/src/Functions";
 import authorizeWallet from "./connect";
 import getInitialState from "./init";
+import { AuthInitData, AuthState, TokenAgeSeconds } from "@web3-auth/types/build/Auth";
 
 const Context = createContext<AuthState>(null as any);
 
@@ -17,20 +17,29 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 		acceptCookies,
 	});
 
-	function login(errHandler: ErrHandler) {
-		if (!cookiesAccepted()) {
-			errHandler("You must accept cookies before logging in.");
-			return;
-		}
+	async function login(errHandler: ErrHandler) {
+		try {
+			if (!cookiesAccepted()) {
+				throw new Error("You must accept cookies before logging in.");
+			}
 
-		const setUser = (user: AuthUser) => {
+			const userInitData: AuthInitData | null = await authorizeWallet(errHandler);
+			if (!userInitData) {
+				return;
+			}
+
+			const tokenAge: TokenAgeSeconds = 2592000;
+			setCookie(null, "token", userInitData.sessionToken, {
+				maxAge: tokenAge,
+			});
 			setState({
 				...state,
-				user,
+				user: userInitData.user,
 				authorized: true,
 			});
-		};
-		authorizeWallet(errHandler, setUser);
+		} catch (err: any) {
+			errHandler(err.message);
+		}
 	}
 
 	function logout() {

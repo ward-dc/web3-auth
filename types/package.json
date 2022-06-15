@@ -1,0 +1,20 @@
+{
+  "name": "@web3-auth/types",
+  "version": "1.0.1",
+  "description": "Types for the front and backend of web3-auth",
+  "main": "build/Auth.js",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "publish": "tsc && npm publish",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "include": [
+    "build/**/*"
+  ],
+  "dependencies": {
+    "@types/react": "^18.0.12"
+  }
+}

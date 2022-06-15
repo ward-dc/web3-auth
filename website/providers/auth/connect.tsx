@@ -3,24 +3,26 @@ import { MetaMaskInpageProvider } from "@metamask/providers";
 import { Maybe } from "@metamask/providers/dist/utils";
 import { ethers } from "ethers";
 import { setCookie } from "nookies";
-import { AuthUser } from "../../types/Auth";
-import { ErrHandler, SetUser } from "../../types/Functions";
-import { AuthResponse, VerifyResponse } from "../../types/Response";
+import { ErrHandler, SetUser } from "../../../types/src/Functions";
+import { AuthResponse, ErrorResponse, VerifyResponse } from "../../../types/src/Response";
+import { AuthInitData, AuthUser } from "@web3-auth/types/build/Auth";
 
-export default async function authorizeWallet(errHandler: ErrHandler, setUser: SetUser): Promise<void> {
+export default async function authorizeWallet(errHandler: ErrHandler): Promise<AuthInitData | null> {
 	try {
-		const ethereum = await getEthereum();
-		const accountAddress = await getAccountAddress(ethereum);
+		const ethereum:MetaMaskInpageProvider = await getEthereum();
+		const accountAddress:string = await getAccountAddress(ethereum);
 
-		const initResponse = await sendAuthRequest(accountAddress);
-		const message = initResponse.result;
+		const initResponse:AuthResponse = await sendAuthRequest(accountAddress);
+
+		const message:string = getMessage(initResponse);
 		const signature: string = await requestUserSignature(ethereum as any, message);
 
-		const validationResponse = await sendValidationRequest(message, signature);
+		const validationResponse:VerifyResponse = await sendValidationRequest(message, signature);
 
-		syncUserInfo(setUser, validationResponse);
+		return getUserResult(validationResponse);
 	} catch (e) {
 		errHandler(getErrorMessage(e));
+		return null;
 	}
 }
 
@@ -90,14 +92,17 @@ async function requestUserSignature(ethereum: ExternalProvider, message: string)
 	return await signer.signMessage(message);
 }
 
-function syncUserInfo(setUser: (user: AuthUser) => void, validationResponse: VerifyResponse) {
+function getUserResult(validationResponse: VerifyResponse):AuthInitData {
 	if (!validationResponse.success) {
 		throw new Error(validationResponse.error);
-	} else {
-		setUser(validationResponse.result.user);
-		setCookie(null, "token", validationResponse.result.sessionToken, {
-			maxAge: 30 * 24 * 60 * 60,
-			path: "/",
-		});
 	}
+	return validationResponse.result;
 }
+
+function getMessage(initResponse: AuthResponse) {
+	if (!initResponse.success) {
+		throw new Error(initResponse.error);
+	}
+	return initResponse.result;
+}
+

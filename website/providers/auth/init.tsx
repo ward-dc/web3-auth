@@ -1,14 +1,10 @@
+import { AuthState, AuthUser } from "@web3-auth/types/build/Auth";
+import { UserResponse } from "@web3-auth/types/build/Response";
 import { parseCookies } from "nookies";
-import { AuthState } from "../../types/Auth";
 
 export default async function getInitialState(state: AuthState): Promise<AuthState> {
 	const userData = await getUserData();
 	if (userData) {
-		console.log({
-			...state,
-			user: userData,
-			authorized: true,
-		});
 		return {
 			...state,
 			user: userData,
@@ -18,7 +14,7 @@ export default async function getInitialState(state: AuthState): Promise<AuthSta
 	return state;
 }
 
-async function getUserData() {
+async function getUserData():Promise<AuthUser | null> {
 	const isClientSide = typeof window !== "undefined";
 	if (isClientSide) {
 		try {
@@ -33,8 +29,8 @@ async function getUserData() {
 	return null;
 }
 
-async function fetchUserData(token: string) {
-	const userResponse = await (await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/user?token=${token}`)).json();
+async function fetchUserData(token: string):Promise<AuthUser | null> {
+	const userResponse:UserResponse = await (await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/user?token=${token}`)).json();
 	if (userResponse.success) {
 		return userResponse.result;
 	}

@@ -573,6 +573,15 @@
     "@types/scheduler" "*"
     csstype "^3.0.2"
 
+"@types/react@^18.0.12":
+  version "18.0.12"
+  resolved "https://registry.yarnpkg.com/@types/react/-/react-18.0.12.tgz#cdaa209d0a542b3fcf69cf31a03976ec4cdd8840"
+  integrity sha512-duF1OTASSBQtcigUvhuiTB1Ya3OvSy+xORCiEf20H0P0lzx+/KeVsA99U5UjLXSbyo1DRJDlLKqTeM1ngosqtg==
+  dependencies:
+    "@types/prop-types" "*"
+    "@types/scheduler" "*"
+    csstype "^3.0.2"
+
 "@types/scheduler@*":
   version "0.16.2"
   resolved "https://registry.yarnpkg.com/@types/scheduler/-/scheduler-0.16.2.tgz#1a62f89525723dde24ba1b01b092bf5df8ad4d39"
@@ -621,6 +630,13 @@
   dependencies:
     "@typescript-eslint/types" "5.27.0"
     eslint-visitor-keys "^3.3.0"
+
+"@web3-auth/types@^1.0.13":
+  version "1.0.13"
+  resolved "https://registry.yarnpkg.com/@web3-auth/types/-/types-1.0.13.tgz#e20f3be2a67cbe28389b9effdf0a6b38eb9c20c1"
+  integrity sha512-IkXM1KDXdStN6g6c/jmjCxFAmgWO0bQj0vSxJEQoduswBqctokxfWea5eSiMmI93t7XsQBWtMsbPFMYPTfgJVQ==
+  dependencies:
+    "@types/react" "^18.0.12"
 
 acorn-jsx@^5.3.2:
   version "5.3.2"
