@@ -6,79 +6,20 @@ import {
 import { ethers } from "ethers";
 
 import prisma from "../utils/prismaHandler";
+import { AuthRequestData } from "../types/Auth";
+import TokenManger from "./tokenManger";
+import { AuthInitData, AuthUser } from "@web3-auth/types/build/Auth";
 
-interface AuthRequest {
-	id: string;
-	address: string;
-	time: Date;
-}
+let tokenManger = new TokenManger();
 
-let authRequests: AuthRequest[] = [];
-
-export const addToken = (address: string): string => {
-	const authToken = generateToken();
-	const authRequest: AuthRequest = {
-		id: authToken,
-		address: address,
-		time: new Date(),
-	};
-
-	authRequests.push(authRequest);
-	return generateMessage(authToken);
-};
-
-const getMessageToken = (message: string): AuthRequest | undefined => {
-	const authToken = getTokenFromMessage(message);
-	return authRequests.find((t) => t.id === authToken);
+export const createMessage = (address: string): string => {
+	return tokenManger.addToken(address);
 };
 
 export const cleanTokens = (): void => {
-	authRequests = authRequests.filter((authRequest) => {
-		const timeDiff = new Date().getTime() - authRequest.time.getTime();
-		return timeDiff < 1000 * 60 * 60;
-	});
+	tokenManger = new TokenManger();
 };
 
-export const verifyToken = async (message: string, signature: string) => {
-	const signerAddress = ethers.utils.verifyMessage(message, signature);
-	const authRequest = getMessageToken(message);
-	const authToken = getTokenFromMessage(message);
-
-	const validMessage = authRequest?.id === authToken;
-	const validSigner =
-		authRequest?.address === signerAddress?.toLocaleLowerCase();
-	if (validMessage && validSigner) {
-		const sessionToken = generateToken();
-		
-		const user = await prisma.user.upsert({
-			where: {
-				address: signerAddress,
-			},
-			create: {
-				address: signerAddress,
-				sessions: {
-					create: {
-						id: sessionToken,
-					},
-				},
-			},
-			update: {
-				sessions: {
-					create: {
-						id: sessionToken,
-					},
-				},
-			},
-			select: {
-				address: true,
-				role: true,
-				subscription: true,
-			},
-		});
-		return {
-			user: user,
-			sessionToken: sessionToken,
-		};
-	}
-	return null;
+export const verifyToken = async (message: string, signature: string):Promise<AuthInitData | null> => {
+	return await tokenManger.verifySignature(message, signature);
 };

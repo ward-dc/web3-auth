@@ -1,18 +1,30 @@
-import { AuthUser } from "./Auth";
+import { AuthInitData, AuthUser } from "./Auth";
 
 interface Response {
-    success: boolean;
-    result: any;
-    error: string;
+	success: true;
 }
 
-export interface AuthResponse extends Response {
-    result: string;
+export type AuthResponse = AuthOkResponse | ErrorResponse;
+export interface AuthOkResponse extends Response {
+	result: string;
 }
 
-export interface VerifyResponse extends Response {
-    result: {
-        user: AuthUser;
-        sessionToken: string;
-    };
+export type UserResponse = UserOkResponse | ErrorResponse;
+export interface UserOkResponse extends Response {
+	result: AuthUser;
+}
+
+export type VerifyResponse = VerifyOkResponse | ErrorResponse;
+export interface VerifyOkResponse extends Response {
+	result: AuthInitData;
+}
+
+export type LogoutResponse = LogoutOkResponse | ErrorResponse;
+export interface LogoutOkResponse extends Response {
+	result: string;
+}
+
+export interface ErrorResponse {
+    success: false;
+	error: string;
 }

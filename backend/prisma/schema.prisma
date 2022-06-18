@@ -17,16 +17,36 @@ enum Role {
 
 model User {
   address          String    @id
+  role             Role      @default(USER)
+  
+  subscription     DateTime?
+
+  sessions         Session[]
+  bans            Ban[]
+
   createdAt        DateTime  @default(now())
   balanceUpdatedAt DateTime  @default(now())
-  sessions         Session[]
-  subscription     DateTime?
-  role             Role      @default(USER)
+
+}
+
+model Ban {
+  address String
+  reason  String
+  until   DateTime
+
+  user        User     @relation(fields: [address], references: [address])
+
+  createdAt DateTime @default(now())
+
+  @@id([address, until])
 }
 
 model Session {
-  id        String   @id
-  userAddress    String
-  user      User     @relation(fields: [userAddress], references: [address])
-  createdAt DateTime @default(now())
+  id          String   @id
+  userAddress String
+
+  user        User     @relation(fields: [userAddress], references: [address])
+
+  lastLogin   DateTime @default(now())
+  createdAt   DateTime @default(now())
 }

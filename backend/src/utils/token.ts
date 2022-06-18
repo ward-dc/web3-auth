@@ -16,9 +16,7 @@ export const generateMessage = (token: string): string => {
 	return `${prefix}${token}`;
 };
 
-export const getTokenFromMessage = (message: string): string | undefined => {
+export const getTokenFromMessage = (message: string): string => {
 	const token = message.replace(prefix, "");
-	if (token.length === tokenLenght) {
-		return token;
-	}
+	return token;
 }

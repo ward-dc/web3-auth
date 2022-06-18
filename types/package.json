@@ -1,6 +1,6 @@
 {
   "name": "@web3-auth/types",
-  "version": "1.0.1",
+  "version": "1.0.15",
   "description": "Types for the front and backend of web3-auth",
   "main": "build/Auth.js",
   "types": "./dist/index.d.ts",

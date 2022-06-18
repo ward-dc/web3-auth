@@ -20,7 +20,7 @@ async function getUserData():Promise<AuthUser | null> {
 		try {
 			const cookies = parseCookies();
 			const token = cookies.token;
-
+			console.log(token);
 			if (token) {
 				return fetchUserData(token);
 			}
@@ -31,6 +31,7 @@ async function getUserData():Promise<AuthUser | null> {
 
 async function fetchUserData(token: string):Promise<AuthUser | null> {
 	const userResponse:UserResponse = await (await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/user?token=${token}`)).json();
+	console.log(userResponse);
 	if (userResponse.success) {
 		return userResponse.result;
 	}

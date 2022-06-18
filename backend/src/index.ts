@@ -11,8 +11,9 @@ app.use(cors());
 dotenv.config();
 
 //POST
-app.post("/auth", require("./events/POST/auth"));
-app.post("/verify", require("./events/POST/verify"));
+app.post("/auth", require("./events/POST/login/auth"));
+app.post("/verify", require("./events/POST/login/verify"));
+app.post("/logout", require("./events/POST/logout/logout"));
 
 //GET
 app.get("/user", require("./events/GET/user"));

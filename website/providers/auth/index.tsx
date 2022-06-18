@@ -4,6 +4,7 @@ import { ErrHandler } from "../../../types/src/Functions";
 import authorizeWallet from "./connect";
 import getInitialState from "./init";
 import { AuthInitData, AuthState, TokenAgeSeconds } from "@web3-auth/types/build/Auth";
+import sendServerLogout from "./logout";
 
 const Context = createContext<AuthState>(null as any);
 
@@ -42,9 +43,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 		}
 	}
 
-	function logout() {
-		destroyCookie(null, "token");
-		setState({ ...state, user: null, authorized: false });
+	async function logout(errHandler: ErrHandler) {
+		const success = await sendServerLogout(errHandler);
+		if (success) {
+			destroyCookie(null, "token");
+			setState({ ...state, user: null, authorized: false });
+		}
 	}
 
 	function acceptCookies() {
@@ -55,7 +59,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 	function cookiesAccepted(): boolean {
 		return localStorage.getItem("cookiesAccepted") === "true";
 	}
-	console.log(state);
 
 	useEffect(() => {
 		getInitialState(state).then((initialState: AuthState) => {
